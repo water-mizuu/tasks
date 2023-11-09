@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
-class Todo extends ChangeNotifier {
-  Todo({
+class Task extends ChangeNotifier {
+  Task({
     required String title,
     required this.listId,
     required this.id,

@@ -3,13 +3,13 @@ import "package:tasks/back_end/models/task_list.dart";
 
 class TaskListInheritedWidget extends InheritedWidget {
   const TaskListInheritedWidget({
-    required this.todoList,
+    required this.taskList,
     required super.child,
     super.key,
   });
 
-  final TaskList todoList;
+  final TaskList taskList;
 
   @override
-  bool updateShouldNotify(covariant TaskListInheritedWidget oldWidget) => todoList != oldWidget.todoList;
+  bool updateShouldNotify(covariant TaskListInheritedWidget oldWidget) => taskList != oldWidget.taskList;
 }

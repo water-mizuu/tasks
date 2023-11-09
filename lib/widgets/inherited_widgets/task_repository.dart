@@ -3,27 +3,27 @@ import "package:tasks/back_end/models/task_list.dart";
 
 class TaskRepository extends InheritedWidget {
   const TaskRepository({
-    required this.todoLists,
-    required this.addTodoList,
-    required int Function() getActiveTodoListIndex,
-    required void Function(int) setActiveTodoListIndex,
-    required this.removeTodoList,
+    required this.taskLists,
+    required this.addTaskList,
+    required int Function() getActiveTaskListIndex,
+    required void Function(int) setActiveTaskListIndex,
+    required this.removeTaskList,
     required super.child,
     super.key,
-  })  : _getActiveTodoListIndex = getActiveTodoListIndex,
-        _setActiveTodoListIndex = setActiveTodoListIndex;
+  })  : _getActiveTaskListIndex = getActiveTaskListIndex,
+        _setActiveTaskListIndex = setActiveTaskListIndex;
 
-  final List<TaskList> todoLists;
-  final void Function(TaskList todoList) addTodoList;
-  final int Function() _getActiveTodoListIndex;
-  final void Function(int index) _setActiveTodoListIndex;
-  final void Function(int id) removeTodoList;
+  final List<TaskList> taskLists;
+  final void Function(TaskList taskList) addTaskList;
+  final int Function() _getActiveTaskListIndex;
+  final void Function(int index) _setActiveTaskListIndex;
+  final void Function(int id) removeTaskList;
 
-  int get activeTodoListIndex => _getActiveTodoListIndex();
-  void set activeTodoListIndex(int index) => _setActiveTodoListIndex(index);
+  int get activeTaskListIndex => _getActiveTaskListIndex();
+  void set activeTaskListIndex(int index) => _setActiveTaskListIndex(index);
 
   static TaskRepository of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<TaskRepository>()!;
 
   @override
-  bool updateShouldNotify(covariant TaskRepository oldWidget) => todoLists.length != oldWidget.todoLists.length;
+  bool updateShouldNotify(covariant TaskRepository oldWidget) => taskLists.length != oldWidget.taskLists.length;
 }

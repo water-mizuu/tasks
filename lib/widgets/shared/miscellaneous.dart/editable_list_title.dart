@@ -2,9 +2,9 @@ import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 
 class EditableListTitle extends StatefulWidget {
-  const EditableListTitle({required this.todoList, super.key});
+  const EditableListTitle({required this.taskList, super.key});
 
-  final TaskList todoList;
+  final TaskList taskList;
 
   @override
   State<EditableListTitle> createState() => _EditableListTitleState();
@@ -40,16 +40,16 @@ class _EditableListTitleState extends State<EditableListTitle> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: widget.todoList,
+      listenable: widget.taskList,
       builder: (BuildContext context, _) => GestureDetector(
         onDoubleTap: () {
           setState(() {
-            textEditingController = TextEditingController(text: widget.todoList.name);
+            textEditingController = TextEditingController(text: widget.taskList.name);
             focus();
           });
         },
         child: TextField(
-          controller: textEditingController ?? TextEditingController(text: widget.todoList.name),
+          controller: textEditingController ?? TextEditingController(text: widget.taskList.name),
           focusNode: focusNode,
           autofocus: true,
           showCursor: true,

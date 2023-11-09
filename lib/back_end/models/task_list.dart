@@ -1,26 +1,26 @@
 import "dart:math" as math;
 
 import "package:flutter/material.dart";
-import "package:tasks/back_end/models/todo.dart";
+import "package:tasks/back_end/models/task.dart";
 import "package:tasks/shared/extension_types/immutable_list.dart";
 
 typedef Indexed<T> = (int index, T value);
 
 class TaskList extends ChangeNotifier {
-  TaskList({required this.id, required String name, required List<Todo> todos})
+  TaskList({required this.id, required String name, required List<Task> tasks})
       : _name = name,
-        _todos = todos,
-        assert(todos.map((Todo v) => v.id).toSet().length == todos.length, "Todo ids must be unique") {
-    todoId = todos.isEmpty ? 0 : todos.map((Todo todo) => todo.id).reduce(math.max) + 1;
+        _tasks = tasks,
+        assert(tasks.map((Task v) => v.id).toSet().length == tasks.length, "task ids must be unique") {
+    taskId = tasks.isEmpty ? 0 : tasks.map((Task task) => task.id).reduce(math.max) + 1;
   }
 
-  TaskList.empty({required int id, required String name}) : this(id: id, name: name, todos: <Todo>[]);
+  TaskList.empty({required int id, required String name}) : this(id: id, name: name, tasks: <Task>[]);
   TaskList.dummy({int? id, int taskCount = 10, String name = "Dummy"})
       : this(
           id: id ?? 0,
           name: name,
-          todos: <Todo>[
-            for (int i = 0; i < taskCount; ++i) Todo(listId: id ?? 0, id: i, title: "Task #$i", isCompleted: false),
+          tasks: <Task>[
+            for (int i = 0; i < taskCount; ++i) Task(listId: id ?? 0, id: i, title: "Task #$i", isCompleted: false),
           ],
         );
 
@@ -28,7 +28,7 @@ class TaskList extends ChangeNotifier {
   final int id;
 
   /// The id to use for the next item
-  late int todoId;
+  late int taskId;
 
   String _name;
   String get name => _name;
@@ -39,26 +39,26 @@ class TaskList extends ChangeNotifier {
     }
   }
 
-  List<Todo> _todos;
-  ImmutableList<Todo> get todos => ImmutableList<Todo>(_todos);
+  List<Task> _tasks;
+  ImmutableList<Task> get tasks => ImmutableList<Task>(_tasks);
 
-  (int index, Todo todo)? search({required int id}) =>
-      _todos.indexed.where((Indexed<Todo> todo) => todo.$2.id == id).singleOrNull;
+  (int index, Task task)? search({required int id}) =>
+      _tasks.indexed.where((Indexed<Task> task) => task.$2.id == id).singleOrNull;
 
-  void addTodo({required String title, required bool isCompleted}) {
-    _todos.add(Todo(title: title, listId: this.id, id: todoId, isCompleted: isCompleted));
-    todoId += 1;
-
-    notifyListeners();
-  }
-
-  void removeTodo({required int id}) {
-    _todos.removeWhere((Todo todo) => todo.id == id);
+  void addTask({required String title, required bool isCompleted}) {
+    _tasks.add(Task(title: title, listId: this.id, id: taskId, isCompleted: isCompleted));
+    taskId += 1;
 
     notifyListeners();
   }
 
-  void reorganizeTodo({required int from, required int to}) {
+  void removeTask({required int id}) {
+    _tasks.removeWhere((Task task) => task.id == id);
+
+    notifyListeners();
+  }
+
+  void reorganizeTask({required int from, required int to}) {
     if (from == to) {
       return;
     }
@@ -69,26 +69,26 @@ class TaskList extends ChangeNotifier {
       --to;
     }
 
-    Todo todo = todos[from];
-    _todos.removeAt(from);
-    _todos.insert(to, todo);
+    Task task = tasks[from];
+    _tasks.removeAt(from);
+    _tasks.insert(to, task);
     notifyListeners();
   }
 
-  void toggleTodoCompletion({required int id}) {
-    if (this.search(id: id) case (_, Todo todo)) {
-      todo.toggleIsCompleted();
+  void toggleTaskCompletion({required int id}) {
+    if (this.search(id: id) case (_, Task task)) {
+      task.toggleIsCompleted();
       notifyListeners();
     }
   }
 
-  void setTodoCompletion({required int id, required bool value}) {
-    if (this.search(id: id) case (_, Todo todo)) {
-      if (todo.isCompleted == value) {
+  void setTaskCompletion({required int id, required bool value}) {
+    if (this.search(id: id) case (_, Task task)) {
+      if (task.isCompleted == value) {
         return;
       }
 
-      todo.isCompleted = value;
+      task.isCompleted = value;
       notifyListeners();
     }
   }

@@ -1,20 +1,20 @@
 import "package:flutter/material.dart";
+import "package:tasks/back_end/models/task.dart";
 import "package:tasks/back_end/models/task_list.dart";
-import "package:tasks/back_end/models/todo.dart";
 
 class TaskItem extends StatelessWidget {
-  const TaskItem({required this.todoList, required this.todo, super.key});
+  const TaskItem({required this.taskList, required this.task, super.key});
 
-  final TaskList todoList;
-  final Todo todo;
+  final TaskList taskList;
+  final Task task;
 
   @override
   Widget build(BuildContext context) {
     Widget widget = ListenableBuilder(
-      listenable: Listenable.merge(<Listenable>[todo, todoList]),
+      listenable: Listenable.merge(<Listenable>[task, taskList]),
       builder: (BuildContext context, _) {
         return Dismissible(
-          key: ValueKey<int>(todo.id),
+          key: ValueKey<int>(task.id),
           dismissThresholds: const <DismissDirection, double>{
             DismissDirection.endToStart: 0.5,
           },
@@ -22,7 +22,7 @@ class TaskItem extends StatelessWidget {
             return direction == DismissDirection.endToStart;
           },
           onDismissed: (DismissDirection direction) {
-            todoList.removeTodo(id: todo.id);
+            taskList.removeTask(id: task.id);
           },
           background: const SizedBox(),
           secondaryBackground: const ColoredBox(
@@ -34,20 +34,20 @@ class TaskItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  todo.title,
-                  style: TextStyle(decoration: todo.isCompleted ? TextDecoration.lineThrough : null),
+                  task.title,
+                  style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 32.0),
-                  child: Text(todoList.name),
+                  child: Text(taskList.name),
                 ),
               ],
             ),
             leading: Checkbox(
-              value: todo.isCompleted,
+              value: task.isCompleted,
               onChanged: (bool? value) {
                 if (value != null) {
-                  todoList.toggleTodoCompletion(id: todo.id);
+                  taskList.toggleTaskCompletion(id: task.id);
                 }
               },
             ),

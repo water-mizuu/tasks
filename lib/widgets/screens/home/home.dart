@@ -13,14 +13,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final ValueNotifier<int> activeTodoListIndex = ValueNotifier<int>(0);
-  List<TaskList>? todoLists;
+  List<TaskList>? taskLists;
+  int activeTaskListIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    todoLists = <TaskList>[
+    taskLists = <TaskList>[
       TaskList.dummy(id: 0, taskCount: 20, name: "List #0"),
       TaskList.dummy(id: 1, taskCount: 5, name: "List #1"),
       TaskList.dummy(id: 2, taskCount: 3, name: "List #2"),
@@ -28,40 +28,33 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  void dispose() {
-    activeTodoListIndex.dispose();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (todoLists case List<TaskList> todoLists) {
-      TaskList todoList = todoLists[activeTodoListIndex.value];
+    if (taskLists case List<TaskList> taskLists) {
+      TaskList taskList = taskLists[activeTaskListIndex];
 
       return TaskRepository(
-        todoLists: todoLists,
-        addTodoList: (TaskList todoList) {
+        taskLists: taskLists,
+        addTaskList: (TaskList taskList) {
           setState(() {
-            todoLists.add(todoList);
+            taskLists.add(taskList);
           });
         },
-        getActiveTodoListIndex: () {
-          return activeTodoListIndex.value;
+        getActiveTaskListIndex: () {
+          return activeTaskListIndex;
         },
-        setActiveTodoListIndex: (int index) {
+        setActiveTaskListIndex: (int index) {
           setState(() {
-            activeTodoListIndex.value = index;
+            activeTaskListIndex = index;
           });
         },
-        removeTodoList: (int id) {
+        removeTaskList: (int id) {
           setState(() {
-            todoLists.removeWhere((TaskList todoList) => todoList.id == id);
+            taskLists.removeWhere((TaskList taskList) => taskList.id == id);
           });
         },
         child: Responsive(
-          mobileBuilder: (BuildContext context) => MobileTodoList(todoList: todoList),
-          desktopBuilder: (BuildContext context) => DesktopTodoList(todoList: todoList),
+          mobileBuilder: (BuildContext context) => MobileTaskList(taskList: taskList),
+          desktopBuilder: (BuildContext context) => DesktopTaskList(taskList: taskList),
         ),
       );
     } else {
@@ -70,13 +63,13 @@ class _HomeState extends State<Home> {
   }
 }
 
-class DesktopTodoList extends StatelessWidget {
-  const DesktopTodoList({
-    required this.todoList,
+class DesktopTaskList extends StatelessWidget {
+  const DesktopTaskList({
+    required this.taskList,
     super.key,
   });
 
-  final TaskList todoList;
+  final TaskList taskList;
 
   @override
   Widget build(BuildContext context) {
@@ -89,21 +82,21 @@ class DesktopTodoList extends StatelessWidget {
               slivers: <Widget>[
                 const SliverAppBar(
                   automaticallyImplyLeading: false,
-                  title: Text("Todo Lists"),
+                  title: Text("Task Lists"),
                   pinned: true,
                 ),
                 SliverList.builder(
-                  itemCount: TaskRepository.of(context).todoLists.length,
+                  itemCount: TaskRepository.of(context).taskLists.length,
                   itemBuilder: (BuildContext context, int index) {
                     TaskRepository repository = TaskRepository.of(context);
 
                     return ListenableBuilder(
-                      listenable: repository.todoLists[index],
+                      listenable: repository.taskLists[index],
                       builder: (BuildContext context, Widget? widget) => ListTile(
                         onTap: () {
-                          repository.activeTodoListIndex = index;
+                          repository.activeTaskListIndex = index;
                         },
-                        title: Text(repository.todoLists[index].name),
+                        title: Text(repository.taskLists[index].name),
                       ),
                     );
                   },
@@ -118,14 +111,14 @@ class DesktopTodoList extends StatelessWidget {
                   scrolledUnderElevation: 0.0,
                   title: NotificationListener<ChangeTitleNotification>(
                     onNotification: (ChangeTitleNotification notification) {
-                      todoList.name = notification.title;
+                      taskList.name = notification.title;
                       return true;
                     },
-                    child: EditableListTitle(todoList: todoList),
+                    child: EditableListTitle(taskList: taskList),
                   ),
                 ),
                 Expanded(
-                  child: TaskListView(todoList: todoList),
+                  child: TaskListView(taskList: taskList),
                 ),
               ],
             ),
@@ -136,10 +129,10 @@ class DesktopTodoList extends StatelessWidget {
   }
 }
 
-class MobileTodoList extends StatelessWidget {
-  const MobileTodoList({required this.todoList, super.key});
+class MobileTaskList extends StatelessWidget {
+  const MobileTaskList({required this.taskList, super.key});
 
-  final TaskList todoList;
+  final TaskList taskList;
 
   @override
   Widget build(BuildContext context) {
@@ -148,10 +141,10 @@ class MobileTodoList extends StatelessWidget {
         scrolledUnderElevation: 0.0,
         title: NotificationListener<ChangeTitleNotification>(
           onNotification: (ChangeTitleNotification notification) {
-            todoList.name = notification.title;
+            taskList.name = notification.title;
             return true;
           },
-          child: EditableListTitle(todoList: todoList),
+          child: EditableListTitle(taskList: taskList),
         ),
       ),
       drawer: Drawer(
@@ -159,27 +152,27 @@ class MobileTodoList extends StatelessWidget {
           slivers: <Widget>[
             const SliverAppBar(
               automaticallyImplyLeading: false,
-              title: Text("Todo Lists"),
+              title: Text("task Lists"),
               pinned: true,
             ),
             SliverList.builder(
-              itemCount: TaskRepository.of(context).todoLists.length,
+              itemCount: TaskRepository.of(context).taskLists.length,
               itemBuilder: (BuildContext context, int index) {
                 TaskRepository repository = TaskRepository.of(context);
 
                 return ListTile(
                   onTap: () {
-                    repository.activeTodoListIndex = index;
+                    repository.activeTaskListIndex = index;
                     Navigator.of(context).pop();
                   },
-                  title: Text(repository.todoLists[index].name),
+                  title: Text(repository.taskLists[index].name),
                 );
               },
             ),
           ],
         ),
       ),
-      body: TaskListView(todoList: todoList),
+      body: TaskListView(taskList: taskList),
     );
   }
 }
