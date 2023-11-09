@@ -3,7 +3,6 @@ import "package:flutter/material.dart";
 class Task extends ChangeNotifier {
   Task({
     required String title,
-    required this.listId,
     required this.id,
     required bool isCompleted,
     required DateTime? deadline,
@@ -11,7 +10,6 @@ class Task extends ChangeNotifier {
         _title = title,
         _isCompleted = isCompleted;
 
-  final int listId;
   final int id;
 
   DateTime? _deadline;

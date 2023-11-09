@@ -22,7 +22,6 @@ class TaskList extends ChangeNotifier {
           tasks: <Task>[
             for (int i = 0; i < taskCount; ++i)
               Task(
-                listId: id ?? 0,
                 id: i,
                 title: "Task #$i",
                 isCompleted: false,
@@ -52,11 +51,15 @@ class TaskList extends ChangeNotifier {
   List<Task> _tasks;
   ImmutableList<Task> get tasks => ImmutableList<Task>(_tasks);
 
-  (int index, Task task)? search({required int id}) =>
-      _tasks.indexed.where((Indexed<Task> task) => task.$2.id == id).singleOrNull;
-
   void addTask({required String title, required bool isCompleted, required DateTime? deadline}) {
-    _tasks.add(Task(title: title, listId: this.id, id: taskId, isCompleted: isCompleted, deadline: deadline));
+    _tasks.add(
+      Task(
+        title: title,
+        id: taskId,
+        isCompleted: isCompleted,
+        deadline: deadline,
+      ),
+    );
     taskId += 1;
 
     notifyListeners();

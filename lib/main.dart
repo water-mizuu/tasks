@@ -1,14 +1,8 @@
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
-import "package:shared_preferences/shared_preferences.dart";
 import "package:tasks/widgets/screens/home/home.dart";
 
-late final SharedPreferences sharedPreferences;
-
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  sharedPreferences = await SharedPreferences.getInstance();
-
   runApp(const Application());
 }
 
