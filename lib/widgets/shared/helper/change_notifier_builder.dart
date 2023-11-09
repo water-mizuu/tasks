@@ -39,12 +39,13 @@ final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S> extends Sta
   void _listener() {
     if (widget.selector == null) {
       setState(() {});
-    } else {
-      if (widget.selector?.call(widget.listenable) case S value when value != latest) {
-        setState(() {
-          latest = value;
-        });
-      }
+      return;
+    }
+
+    if (widget.selector!.call(widget.listenable) case S value when value != latest) {
+      setState(() {
+        latest = value;
+      });
     }
   }
 

@@ -31,31 +31,39 @@ class TaskItem extends StatelessWidget {
           ),
           child: ListTile(
             title: IntrinsicHeight(
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    task.title,
-                    style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
-                  ),
-                  if (task.deadline case DateTime deadline)
-                    Text(
-                      "${deadline.month}/${deadline.day}/${deadline.year}",
-                      style: TextStyle(
-                        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                        fontSize: 10.0,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Checkbox(
+                      value: task.isCompleted,
+                      onChanged: (bool? value) {
+                        if (value != null) {
+                          task.isCompleted = value;
+                        }
+                      },
                     ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        task.title,
+                        style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
+                      ),
+                      if (task.deadline case DateTime deadline)
+                        Text(
+                          "${deadline.month}/${deadline.day}/${deadline.year}",
+                          style: TextStyle(
+                            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                            fontSize: 10.0,
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
-            ),
-            leading: Checkbox(
-              value: task.isCompleted,
-              onChanged: (bool? value) {
-                if (value != null) {
-                  task.toggleIsCompleted();
-                }
-              },
             ),
           ),
         );

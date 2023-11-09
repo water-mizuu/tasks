@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
-import "package:tasks/widgets/shared/miscellaneous.dart/change_notifier_builder.dart";
+import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 
 class TaskInput extends StatefulWidget {
   const TaskInput({required this.taskList, super.key});
@@ -48,7 +48,6 @@ class _TaskInputState extends State<TaskInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[50],
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: Row(
         children: <Widget>[
