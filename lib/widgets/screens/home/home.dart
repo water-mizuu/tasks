@@ -34,13 +34,11 @@ class _HomeState extends State<Home> {
 
       return TaskRepository(
         taskLists: taskLists,
+        activeTaskListIndex: activeTaskListIndex,
         addTaskList: (TaskList taskList) {
           setState(() {
             taskLists.add(taskList);
           });
-        },
-        getActiveTaskListIndex: () {
-          return activeTaskListIndex;
         },
         setActiveTaskListIndex: (int index) {
           setState(() {
@@ -77,33 +75,7 @@ class DesktopTaskList extends StatelessWidget {
       body: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Drawer(
-            child: CustomScrollView(
-              slivers: <Widget>[
-                const SliverAppBar(
-                  automaticallyImplyLeading: false,
-                  title: Text("Task Lists"),
-                  pinned: true,
-                ),
-                SliverList.builder(
-                  itemCount: TaskRepository.of(context).taskLists.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    TaskRepository repository = TaskRepository.of(context);
-
-                    return ListenableBuilder(
-                      listenable: repository.taskLists[index],
-                      builder: (BuildContext context, Widget? widget) => ListTile(
-                        onTap: () {
-                          repository.activeTaskListIndex = index;
-                        },
-                        title: Text(repository.taskLists[index].name),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+          const SideDrawer(shouldPop: false),
           Expanded(
             child: Column(
               children: <Widget>[
@@ -147,32 +119,48 @@ class MobileTaskList extends StatelessWidget {
           child: EditableListTitle(taskList: taskList),
         ),
       ),
-      drawer: Drawer(
-        child: CustomScrollView(
-          slivers: <Widget>[
-            const SliverAppBar(
-              automaticallyImplyLeading: false,
-              title: Text("task Lists"),
-              pinned: true,
-            ),
-            SliverList.builder(
-              itemCount: TaskRepository.of(context).taskLists.length,
-              itemBuilder: (BuildContext context, int index) {
-                TaskRepository repository = TaskRepository.of(context);
+      drawer: const SideDrawer(shouldPop: true),
+      body: TaskListView(taskList: taskList),
+    );
+  }
+}
 
-                return ListTile(
+class SideDrawer extends StatelessWidget {
+  const SideDrawer({required this.shouldPop, super.key});
+
+  final bool shouldPop;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: CustomScrollView(
+        slivers: <Widget>[
+          const SliverAppBar(
+            automaticallyImplyLeading: false,
+            title: Text("Task Lists"),
+            pinned: true,
+          ),
+          SliverList.builder(
+            itemCount: TaskRepository.of(context).taskLists.length,
+            itemBuilder: (BuildContext context, int index) {
+              TaskRepository repository = TaskRepository.of(context);
+
+              return ListenableBuilder(
+                listenable: repository.taskLists[index],
+                builder: (BuildContext context, Widget? widget) => ListTile(
                   onTap: () {
                     repository.activeTaskListIndex = index;
-                    Navigator.of(context).pop();
+                    if (shouldPop) {
+                      Navigator.pop(context);
+                    }
                   },
                   title: Text(repository.taskLists[index].name),
-                );
-              },
-            ),
-          ],
-        ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
-      body: TaskListView(taskList: taskList),
     );
   }
 }
