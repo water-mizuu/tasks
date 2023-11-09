@@ -1,16 +1,16 @@
 import "package:flutter/material.dart";
-import "package:tasks/back_end/models/todo_list.dart";
+import "package:tasks/back_end/models/task_list.dart";
 
-class EditableTodoListTitle extends StatefulWidget {
-  const EditableTodoListTitle({required this.todoList, super.key});
+class EditableListTitle extends StatefulWidget {
+  const EditableListTitle({required this.todoList, super.key});
 
-  final TodoList todoList;
+  final TaskList todoList;
 
   @override
-  State<EditableTodoListTitle> createState() => _EditableTodoListTitleState();
+  State<EditableListTitle> createState() => _EditableListTitleState();
 }
 
-class _EditableTodoListTitleState extends State<EditableTodoListTitle> {
+class _EditableListTitleState extends State<EditableListTitle> {
   final FocusNode focusNode = FocusNode();
   TextEditingController? textEditingController;
 
@@ -57,7 +57,9 @@ class _EditableTodoListTitleState extends State<EditableTodoListTitle> {
           onTapOutside: (_) => completeEdit(context)(),
           enabled: textEditingController != null,
           style: MaterialStateTextStyle.resolveWith((Set<MaterialState> states) {
-            Color color = states.contains(MaterialState.disabled) ? Colors.black : Colors.black87;
+            Color color = states.contains(MaterialState.disabled) //
+                ? Colors.black
+                : Colors.black87;
 
             return TextStyle(color: color, fontSize: 24.0);
           }),

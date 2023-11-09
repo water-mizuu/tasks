@@ -1,13 +1,13 @@
 import "package:flutter/material.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
+import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/todo.dart";
-import "package:tasks/back_end/models/todo_list.dart";
-import "package:tasks/widgets/screens/home/tabs/todo_item.dart";
+import "package:tasks/widgets/screens/home/tabs/task_item.dart";
 
-class TodoListView extends StatelessWidget {
-  const TodoListView({required this.todoList, super.key});
+class TaskListView extends StatelessWidget {
+  const TaskListView({required this.todoList, super.key});
 
-  final TodoList todoList;
+  final TaskList todoList;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class TodoListView extends StatelessWidget {
               ReorderableDelayedDragStartListener(
                 key: ValueKey<(int, int)>((todoList.id, index)),
                 index: index,
-                child: TodoItem(todoList: todoList, todo: todo),
+                child: TaskItem(todoList: todoList, todo: todo),
               ),
           ],
         ),

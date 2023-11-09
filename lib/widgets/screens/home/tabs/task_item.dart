@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
+import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/todo.dart";
-import "package:tasks/back_end/models/todo_list.dart";
 
-class TodoItem extends StatelessWidget {
-  const TodoItem({required this.todoList, required this.todo, super.key});
+class TaskItem extends StatelessWidget {
+  const TaskItem({required this.todoList, required this.todo, super.key});
 
-  final TodoList todoList;
+  final TaskList todoList;
   final Todo todo;
 
   @override
@@ -69,6 +69,7 @@ class TodoItem extends StatelessWidget {
               double factor = switch (offset) {
                 /// If object has parts above the screen
                 // _ when offset < 0 => ((height + offset) / height).clamp(0.0, 1.0),
+
                 /// If the object has parts below the screen
                 _ when offset + height > parentHeight => ((parentHeight - offset) / height).clamp(0.0, 1.0),
                 _ => 1.0,

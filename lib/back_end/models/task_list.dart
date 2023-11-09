@@ -6,16 +6,16 @@ import "package:tasks/shared/extension_types/immutable_list.dart";
 
 typedef Indexed<T> = (int index, T value);
 
-class TodoList extends ChangeNotifier {
-  TodoList({required this.id, required String name, required List<Todo> todos})
+class TaskList extends ChangeNotifier {
+  TaskList({required this.id, required String name, required List<Todo> todos})
       : _name = name,
         _todos = todos,
         assert(todos.map((Todo v) => v.id).toSet().length == todos.length, "Todo ids must be unique") {
     todoId = todos.isEmpty ? 0 : todos.map((Todo todo) => todo.id).reduce(math.max) + 1;
   }
 
-  TodoList.empty({required int id, required String name}) : this(id: id, name: name, todos: <Todo>[]);
-  TodoList.dummy({int? id, int taskCount = 10, String name = "Dummy"})
+  TaskList.empty({required int id, required String name}) : this(id: id, name: name, todos: <Todo>[]);
+  TaskList.dummy({int? id, int taskCount = 10, String name = "Dummy"})
       : this(
           id: id ?? 0,
           name: name,
