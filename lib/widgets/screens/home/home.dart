@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/widgets/inherited_widgets/task_repository.dart";
-import "package:tasks/widgets/screens/home/tabs/task_list.dart";
+import "package:tasks/widgets/screens/home/task_input.dart";
+import "package:tasks/widgets/screens/home/task_list.dart";
 import "package:tasks/widgets/shared/helper/responsive.dart";
 import "package:tasks/widgets/shared/miscellaneous.dart/editable_list_title.dart";
 
@@ -21,7 +22,7 @@ class _HomeState extends State<Home> {
     super.initState();
 
     taskLists = <TaskList>[
-      TaskList.dummy(id: 0, taskCount: 20, name: "List #0"),
+      TaskList.dummy(id: 0, taskCount: 6, name: "List #0"),
       TaskList.dummy(id: 1, taskCount: 5, name: "List #1"),
       TaskList.dummy(id: 2, taskCount: 3, name: "List #2"),
     ];
@@ -92,6 +93,7 @@ class DesktopTaskList extends StatelessWidget {
                 Expanded(
                   child: TaskListView(taskList: taskList),
                 ),
+                TaskInput(taskList: taskList),
               ],
             ),
           ),
@@ -120,7 +122,14 @@ class MobileTaskList extends StatelessWidget {
         ),
       ),
       drawer: const SideDrawer(shouldPop: true),
-      body: TaskListView(taskList: taskList),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: TaskListView(taskList: taskList),
+          ),
+          TaskInput(taskList: taskList),
+        ],
+      ),
     );
   }
 }

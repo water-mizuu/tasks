@@ -21,7 +21,16 @@ class TaskList extends ChangeNotifier {
           name: name,
           tasks: <Task>[
             for (int i = 0; i < taskCount; ++i)
-              Task(listId: id ?? 0, id: i, title: "Task #$i", isCompleted: false, deadline: null),
+              Task(
+                listId: id ?? 0,
+                id: i,
+                title: "Task #$i",
+                isCompleted: false,
+                deadline: switch (math.Random().nextDouble()) {
+                  > 0.5 => DateTime.now().add(Duration(days: math.Random().nextInt(10))),
+                  _ => null,
+                },
+              ),
           ],
         );
 
@@ -74,23 +83,5 @@ class TaskList extends ChangeNotifier {
     _tasks.removeAt(from);
     _tasks.insert(to, task);
     notifyListeners();
-  }
-
-  void toggleTaskCompletion({required int id}) {
-    if (this.search(id: id) case (_, Task task)) {
-      task.toggleIsCompleted();
-      notifyListeners();
-    }
-  }
-
-  void setTaskCompletion({required int id, required bool value}) {
-    if (this.search(id: id) case (_, Task task)) {
-      if (task.isCompleted == value) {
-        return;
-      }
-
-      task.isCompleted = value;
-      notifyListeners();
-    }
   }
 }

@@ -30,24 +30,30 @@ class TaskItem extends StatelessWidget {
             child: Icon(Icons.delete, color: Colors.white),
           ),
           child: ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  task.title,
-                  style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 32.0),
-                  child: Text(taskList.name),
-                ),
-              ],
+            title: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    task.title,
+                    style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
+                  ),
+                  if (task.deadline case DateTime deadline)
+                    Text(
+                      "${deadline.month}/${deadline.day}/${deadline.year}",
+                      style: TextStyle(
+                        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                        fontSize: 10.0,
+                      ),
+                    ),
+                ],
+              ),
             ),
             leading: Checkbox(
               value: task.isCompleted,
               onChanged: (bool? value) {
                 if (value != null) {
-                  taskList.toggleTaskCompletion(id: task.id);
+                  task.toggleIsCompleted();
                 }
               },
             ),
@@ -61,6 +67,8 @@ class TaskItem extends StatelessWidget {
         widget = ListenableBuilder(
           listenable: state.position,
           builder: (BuildContext context, Widget? child) {
+            Widget widget = child!;
+
             if (context.findRenderObject() case RenderBox box when parentBox.hasSize && box.hasSize) {
               double offset = box.localToGlobal(Offset.zero, ancestor: parentBox).dy;
               double parentHeight = parentBox.size.height;
@@ -75,15 +83,16 @@ class TaskItem extends StatelessWidget {
                 _ => 1.0,
               };
 
-              return Transform.scale(
+              widget = Transform.scale(
                 scale: 0.8 + 0.2 * factor,
                 child: Opacity(
                   opacity: 0.25 + 0.75 * factor,
-                  child: child,
+                  child: widget,
                 ),
               );
             }
-            return child!;
+
+            return widget;
           },
           child: widget,
         );
