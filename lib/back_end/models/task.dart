@@ -6,11 +6,22 @@ class Task extends ChangeNotifier {
     required this.listId,
     required this.id,
     required bool isCompleted,
-  })  : _title = title,
+    required DateTime? deadline,
+  })  : _deadline = deadline,
+        _title = title,
         _isCompleted = isCompleted;
 
   final int listId;
   final int id;
+
+  DateTime? _deadline;
+  DateTime? get deadline => _deadline;
+  set deadline(DateTime? value) {
+    if (_deadline != value) {
+      _deadline = value;
+      notifyListeners();
+    }
+  }
 
   String _title;
   String get title => _title;

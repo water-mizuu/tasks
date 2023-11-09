@@ -20,7 +20,8 @@ class TaskList extends ChangeNotifier {
           id: id ?? 0,
           name: name,
           tasks: <Task>[
-            for (int i = 0; i < taskCount; ++i) Task(listId: id ?? 0, id: i, title: "Task #$i", isCompleted: false),
+            for (int i = 0; i < taskCount; ++i)
+              Task(listId: id ?? 0, id: i, title: "Task #$i", isCompleted: false, deadline: null),
           ],
         );
 
@@ -45,8 +46,8 @@ class TaskList extends ChangeNotifier {
   (int index, Task task)? search({required int id}) =>
       _tasks.indexed.where((Indexed<Task> task) => task.$2.id == id).singleOrNull;
 
-  void addTask({required String title, required bool isCompleted}) {
-    _tasks.add(Task(title: title, listId: this.id, id: taskId, isCompleted: isCompleted));
+  void addTask({required String title, required bool isCompleted, required DateTime? deadline}) {
+    _tasks.add(Task(title: title, listId: this.id, id: taskId, isCompleted: isCompleted, deadline: deadline));
     taskId += 1;
 
     notifyListeners();
