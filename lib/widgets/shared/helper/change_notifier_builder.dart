@@ -57,6 +57,13 @@ final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S> extends Sta
   }
 
   @override
+  void dispose() {
+    widget.listenable.removeListener(_listener);
+
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(covariant ChangeNotifierBuilder<T, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
