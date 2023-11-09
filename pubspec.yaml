@@ -35,7 +35,6 @@ dependencies:
     sdk: flutter
   mouse_scroll:
     git: https://github.com/water-mizuu/mouse_scroll.git
-  provider: ^6.0.5
   shared_preferences: ^2.2.2
 
 dev_dependencies:
