@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:mouse_scroll/mouse_scroll.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/widgets/screens/task_list/list_input.dart";
+import "package:tasks/widgets/screens/task_list_screen/list_input.dart";
 import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 
 class SideDrawer extends StatelessWidget {
@@ -21,9 +21,9 @@ class SideDrawer extends StatelessWidget {
                 TaskRepository repository = TaskRepository.of(context);
 
                 return ChangeNotifierBuilder(
-                  listenable: repository,
+                  changeNotifier: repository,
                   selector: (TaskRepository taskRepository) => taskRepository.taskLists.length,
-                  builder: (BuildContext context, Widget? child) {
+                  builder: (BuildContext context, TaskRepository taskBuilder, Widget? child) {
                     print("Redraw");
                     return ReorderableListView.builder(
                       scrollController: controller,

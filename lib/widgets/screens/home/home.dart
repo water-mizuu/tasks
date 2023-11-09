@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/widgets/screens/task_list/side_drawer.dart";
-import "package:tasks/widgets/screens/task_list/task_input.dart";
-import "package:tasks/widgets/screens/task_list/task_list.dart";
+import "package:tasks/widgets/screens/task_list_screen/side_drawer.dart";
+import "package:tasks/widgets/screens/task_list_screen/task_input.dart";
+import "package:tasks/widgets/screens/task_list_screen/task_list.dart";
+import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 import "package:tasks/widgets/shared/helper/responsive.dart";
-import "package:tasks/widgets/shared/miscellaneous.dart/editable_list_title.dart";
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -30,16 +30,22 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return InheritedTaskRepository(
-      taskRepository: taskRepository,
-      child: ListenableBuilder(
-        listenable: taskRepository,
-        builder: (BuildContext context, Widget? child) {
-          return Responsive(
-            mobileBuilder: (BuildContext context) => MobileTaskList(taskList: taskRepository.activeTaskList),
-            desktopBuilder: (BuildContext context) => DesktopTaskList(taskList: taskRepository.activeTaskList),
-          );
-        },
+    return NotificationListener<ChangeTitleNotification>(
+      onNotification: (ChangeTitleNotification notification) {
+        taskRepository.activeTaskList.name = notification.title;
+        return true;
+      },
+      child: InheritedTaskRepository(
+        taskRepository: taskRepository,
+        child: ListenableBuilder(
+          listenable: taskRepository,
+          builder: (BuildContext context, Widget? child) {
+            return Responsive(
+              mobileBuilder: (BuildContext context) => MobileTaskList(taskList: taskRepository.activeTaskList),
+              desktopBuilder: (BuildContext context) => DesktopTaskList(taskList: taskRepository.activeTaskList),
+            );
+          },
+        ),
       ),
     );
   }
@@ -65,18 +71,10 @@ class DesktopTaskList extends StatelessWidget {
               children: <Widget>[
                 AppBar(
                   scrolledUnderElevation: 0.0,
-                  title: NotificationListener<ChangeTitleNotification>(
-                    onNotification: (ChangeTitleNotification notification) {
-                      taskList.name = notification.title;
-                      return true;
-                    },
-                    child: EditableListTitle(taskList: taskList),
-                  ),
+                  title: const EditableListTitle(),
                 ),
-                Expanded(
-                  child: TaskListView(taskList: taskList),
-                ),
-                TaskInput(taskList: taskList),
+                const Expanded(child: TaskListView()),
+                const TaskInput(),
               ],
             ),
           ),
@@ -96,23 +94,100 @@ class MobileTaskList extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
-        title: NotificationListener<ChangeTitleNotification>(
-          onNotification: (ChangeTitleNotification notification) {
-            taskList.name = notification.title;
-            return true;
-          },
-          child: EditableListTitle(taskList: taskList),
-        ),
+        title: const EditableListTitle(),
       ),
       drawer: const SideDrawer(shouldPop: true),
-      body: Column(
+      body: const Column(
         children: <Widget>[
-          Expanded(
-            child: TaskListView(taskList: taskList),
-          ),
-          TaskInput(taskList: taskList),
+          Expanded(child: TaskListView()),
+          TaskInput(),
         ],
       ),
     );
   }
+}
+
+class EditableListTitle extends StatefulWidget {
+  const EditableListTitle({super.key});
+
+  @override
+  State<EditableListTitle> createState() => _EditableListTitleState();
+}
+
+class _EditableListTitleState extends State<EditableListTitle> {
+  final FocusNode focusNode = FocusNode();
+  TextEditingController? textEditingController;
+
+  void focus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode.requestFocus();
+    });
+  }
+
+  void Function() completeEdit(BuildContext context) {
+    return () {
+      ChangeTitleNotification(title: textEditingController!.value.text).dispatch(context);
+      setState(() {
+        textEditingController = null;
+      });
+    };
+  }
+
+  @override
+  void dispose() {
+    textEditingController?.dispose();
+    focusNode.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TaskRepository taskRepository = TaskRepository.of(context);
+
+    return ListenableBuilder(
+      listenable: taskRepository,
+      builder: (BuildContext context, _) {
+        return ChangeNotifierBuilder(
+          changeNotifier: taskRepository.activeTaskList,
+          selector: (TaskList taskList) => taskList.name,
+          builder: (BuildContext context, TaskList taskList, Widget? child) {
+            return GestureDetector(
+              onDoubleTap: () {
+                setState(() {
+                  textEditingController = TextEditingController(text: taskList.name);
+                  focus();
+                });
+              },
+              child: TextField(
+                controller: textEditingController ?? TextEditingController(text: taskList.name),
+                focusNode: focusNode,
+                autofocus: true,
+                showCursor: true,
+                onEditingComplete: completeEdit(context),
+                onTapOutside: (_) => completeEdit(context)(),
+                enabled: textEditingController != null,
+                style: MaterialStateTextStyle.resolveWith((Set<MaterialState> states) {
+                  Color color = states.contains(MaterialState.disabled) //
+                      ? Colors.black
+                      : Colors.black87;
+
+                  return TextStyle(color: color, fontSize: 24.0);
+                }),
+                decoration: const InputDecoration(
+                  disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class ChangeTitleNotification extends Notification {
+  const ChangeTitleNotification({required this.title});
+  final String title;
 }

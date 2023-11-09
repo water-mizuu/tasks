@@ -77,7 +77,7 @@ class InheritedTaskRepository extends InheritedWidget {
   final TaskRepository taskRepository;
 
   @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return false;
+  bool updateShouldNotify(covariant InheritedTaskRepository oldWidget) {
+    return taskRepository != oldWidget.taskRepository;
   }
 }

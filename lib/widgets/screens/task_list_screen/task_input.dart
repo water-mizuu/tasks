@@ -1,11 +1,10 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
+import "package:tasks/back_end/models/task_repository.dart";
 import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 
 class TaskInput extends StatefulWidget {
-  const TaskInput({required this.taskList, super.key});
-
-  final TaskList taskList;
+  const TaskInput({super.key});
 
   @override
   State<TaskInput> createState() => _TaskInputState();
@@ -13,6 +12,7 @@ class TaskInput extends StatefulWidget {
 
 class _TaskInputState extends State<TaskInput> {
   late final TextEditingController textEditingController;
+  late final TaskList taskList;
 
   _TaskBuilder? _taskBuilder;
   _TaskBuilder get taskBuilder {
@@ -31,11 +31,18 @@ class _TaskInputState extends State<TaskInput> {
       return;
     }
 
-    widget.taskList.addTask(title: title, deadline: deadline, isCompleted: false);
+    taskList.addTask(title: title, deadline: deadline, isCompleted: false);
     textEditingController.clear();
     setState(() {
       _taskBuilder = null;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    taskList = TaskRepository.of(context).activeTaskList;
   }
 
   @override
@@ -104,9 +111,9 @@ class _TaskInputState extends State<TaskInput> {
                 taskBuilder.deadline = date;
               },
               child: ChangeNotifierBuilder(
-                listenable: taskBuilder,
+                changeNotifier: taskBuilder,
                 selector: (_TaskBuilder taskBuilder) => taskBuilder.deadline,
-                builder: (BuildContext context, Widget? child) {
+                builder: (BuildContext context, _TaskBuilder taskBuilder, Widget? child) {
                   return Column(
                     children: <Widget>[
                       const Icon(Icons.calendar_month_outlined),

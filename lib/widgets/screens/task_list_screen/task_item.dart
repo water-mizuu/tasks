@@ -50,7 +50,9 @@ class TaskItem extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         task.title,
-                        style: TextStyle(decoration: task.isCompleted ? TextDecoration.lineThrough : null),
+                        style: TextStyle(
+                          decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                        ),
                       ),
                       if (task.deadline case DateTime deadline)
                         Text(
@@ -84,7 +86,7 @@ class TaskItem extends StatelessWidget {
 
               double factor = switch (offset) {
                 /// If object has parts above the screen
-                // _ when offset < 0 => ((height + offset) / height).clamp(0.0, 1.0),
+                _ when offset < 0 => ((height + offset) / height).clamp(0.0, 1.0),
 
                 /// If the object has parts below the screen
                 _ when offset + height > parentHeight => ((parentHeight - offset) / height).clamp(0.0, 1.0),
