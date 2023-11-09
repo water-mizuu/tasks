@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/widgets/screens/home/side_drawer.dart";
-import "package:tasks/widgets/screens/home/task_input.dart";
-import "package:tasks/widgets/screens/home/task_list.dart";
+import "package:tasks/widgets/screens/task_list/side_drawer.dart";
+import "package:tasks/widgets/screens/task_list/task_input.dart";
+import "package:tasks/widgets/screens/task_list/task_list.dart";
 import "package:tasks/widgets/shared/helper/responsive.dart";
 import "package:tasks/widgets/shared/miscellaneous.dart/editable_list_title.dart";
 
