@@ -15,7 +15,7 @@ class Responsive extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return switch (constraints.maxWidth) {
-          <= 600 => mobileBuilder(context),
+          <= 800 => mobileBuilder(context),
           _ => desktopBuilder(context),
         };
       },
