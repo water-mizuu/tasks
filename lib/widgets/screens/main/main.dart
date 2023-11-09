@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/widgets/screens/task_list_screen/side_drawer.dart";
-import "package:tasks/widgets/screens/task_list_screen/task_input.dart";
-import "package:tasks/widgets/screens/task_list_screen/task_list.dart";
+import "package:tasks/widgets/screens/main/panels/task_list_panel/side_drawer.dart";
+import "package:tasks/widgets/screens/main/panels/task_list_panel/task_input.dart";
+import "package:tasks/widgets/screens/main/panels/task_list_panel/task_list.dart";
 import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 import "package:tasks/widgets/shared/helper/responsive.dart";
 
@@ -30,8 +30,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ChangeTitleNotification>(
-      onNotification: (ChangeTitleNotification notification) {
+    return NotificationListener<_ChangeTitleNotification>(
+      onNotification: (_ChangeTitleNotification notification) {
         taskRepository.activeTaskList.name = notification.title;
         return true;
       },
@@ -69,10 +69,7 @@ class DesktopTaskList extends StatelessWidget {
           Expanded(
             child: Column(
               children: <Widget>[
-                AppBar(
-                  scrolledUnderElevation: 0.0,
-                  title: const EditableListTitle(),
-                ),
+                AppBar(scrolledUnderElevation: 0.0, title: const EditableListTitle()),
                 const Expanded(child: TaskListView()),
                 const TaskInput(),
               ],
@@ -126,7 +123,7 @@ class _EditableListTitleState extends State<EditableListTitle> {
 
   void Function() completeEdit(BuildContext context) {
     return () {
-      ChangeTitleNotification(title: textEditingController!.value.text).dispatch(context);
+      _ChangeTitleNotification(title: textEditingController!.value.text).dispatch(context);
       setState(() {
         textEditingController = null;
       });
@@ -187,7 +184,7 @@ class _EditableListTitleState extends State<EditableListTitle> {
   }
 }
 
-class ChangeTitleNotification extends Notification {
-  const ChangeTitleNotification({required this.title});
+class _ChangeTitleNotification extends Notification {
+  const _ChangeTitleNotification({required this.title});
   final String title;
 }

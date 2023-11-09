@@ -48,7 +48,7 @@ class TaskList extends ChangeNotifier {
     }
   }
 
-  List<Task> _tasks;
+  final List<Task> _tasks;
   ImmutableList<Task> get tasks => ImmutableList<Task>(_tasks);
 
   void addTask({required String title, required bool isCompleted, required DateTime? deadline}) {

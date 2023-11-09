@@ -3,7 +3,7 @@ import "package:mouse_scroll/mouse_scroll.dart";
 import "package:tasks/back_end/models/task.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/widgets/screens/task_list_screen/task_item.dart";
+import "package:tasks/widgets/screens/main/panels/task_list_panel/task_item.dart";
 
 class TaskListView extends StatelessWidget {
   const TaskListView({super.key});

@@ -33,7 +33,8 @@ class ChangeNotifierBuilder<T extends ChangeNotifier, S extends Object?> extends
   State<ChangeNotifierBuilder<T, S>> createState() => _ChangeNotifierBuilderState<T, S>();
 }
 
-final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S> extends State<ChangeNotifierBuilder<T, S>> {
+final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S extends Object?>
+    extends State<ChangeNotifierBuilder<T, S>> {
   S? latest;
 
   void _listener() {
@@ -43,6 +44,7 @@ final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S> extends Sta
     }
 
     if (widget.selector!.call(widget.changeNotifier) case S value when value != latest) {
+      print("Calling setState");
       setState(() {
         latest = value;
       });

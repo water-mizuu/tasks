@@ -1,6 +1,6 @@
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
-import "package:tasks/widgets/screens/home/home.dart";
+import "package:tasks/widgets/screens/main/main.dart";
 
 void main() async {
   runApp(const Application());
