@@ -44,7 +44,6 @@ final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S extends Obje
     }
 
     if (widget.selector!.call(widget.changeNotifier) case S value when value != latest) {
-      print("Calling setState");
       setState(() {
         latest = value;
       });
