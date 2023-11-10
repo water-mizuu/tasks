@@ -3,7 +3,6 @@ import "package:mouse_scroll/mouse_scroll.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
 import "package:tasks/shared/extension_types/immutable_list.dart";
-import "package:tasks/shared/extensions/as_value_key.dart";
 import "package:tasks/widgets/screens/main/panels/task_list_panel/list_input.dart";
 import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 
@@ -34,7 +33,7 @@ class SideDrawer extends StatelessWidget {
                   physics: physics,
                   slivers: const <Widget>[
                     SliverOpacity(opacity: 0.0, sliver: SliverToBoxAdapter(child: Divider())),
-                    SideTitle(text: "Welcome"),
+                    SideTitle(text: "Welcome!"),
                     PredefinedTaskListsSliver(),
                     SliverToBoxAdapter(child: Divider()),
                     SideTitle(text: "Task Lists"),
@@ -92,10 +91,7 @@ class PredefinedTaskListsSliver extends StatelessWidget {
             changeNotifier: repository,
             selector: (TaskRepository repository) => taskLists.map((TaskList v) => v.id).join(";"),
             builder: (BuildContext context, TaskRepository repository, Widget? child) {
-              return SliverReorderableList(
-                onReorder: (int a, int b) {
-                  repository.reorganizeTask(from: a, to: b);
-                },
+              return SliverList.builder(
                 itemCount: taskLists.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ReorderableDelayedDragStartListener(
@@ -133,35 +129,34 @@ class ReorderableTaskListsSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TaskRepository repository = TaskRepository.of(context);
+    ImmutableList<TaskList> taskLists = repository.taskLists;
     return SliverPadding(
       padding: const EdgeInsets.only(left: 8),
       sliver: ChangeNotifierBuilder(
         changeNotifier: repository,
-        selector: (TaskRepository repository) => repository.taskLists.map((TaskList v) => v.id).join(";"),
+        selector: (TaskRepository repository) => taskLists.map((TaskList v) => v.id).join(";"),
         builder: (BuildContext context, TaskRepository repository, Widget? child) {
-          ImmutableList<TaskList> taskLists = repository.taskLists;
-
           return SliverReorderableList(
             onReorder: (int a, int b) {
               repository.reorganizeTask(from: a, to: b);
             },
             itemCount: taskLists.length,
             itemBuilder: (BuildContext context, int index) {
-              return Material(
-                key: taskLists[index].id.asValueKey(),
-                color: Colors.transparent,
-                child: ReorderableDelayedDragStartListener(
-                  index: index,
-                  child: ChangeNotifierBuilder(
-                    changeNotifier: taskLists[index],
-                    selector: (TaskList taskList) => taskList.name,
-                    builder: (BuildContext context, TaskList taskList, Widget? widget) {
-                      return ListTile(
+              return ReorderableDelayedDragStartListener(
+                key: ValueKey<int>(taskLists[index].id),
+                index: index,
+                child: ChangeNotifierBuilder(
+                  changeNotifier: taskLists[index],
+                  selector: (TaskList taskList) => taskList.name,
+                  builder: (BuildContext context, TaskList taskList, Widget? widget) {
+                    return Material(
+                      color: Colors.transparent,
+                      child: ListTile(
                         onTap: () => _ChangeActiveTaskListIndexNotification(index).dispatch(context),
                         title: Text(taskList.name),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               );
             },

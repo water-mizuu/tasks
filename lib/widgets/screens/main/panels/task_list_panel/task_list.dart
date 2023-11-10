@@ -4,36 +4,46 @@ import "package:tasks/back_end/models/task.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
 import "package:tasks/widgets/screens/main/panels/task_list_panel/task_item.dart";
+import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 
 class TaskListView extends StatelessWidget {
   const TaskListView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    TaskRepository repository = TaskRepository.of(context);
-
-    return ListenableBuilder(
-      listenable: Listenable.merge(<Listenable?>[repository, repository.activeTaskList]),
-      builder: (BuildContext context, Widget? child) {
-        TaskList taskList = repository.activeTaskList;
-
-        return MouseScroll(
-          duration: const Duration(milliseconds: 760),
-          builder: (BuildContext context, ScrollController controller, ScrollPhysics physics) => ReorderableListView(
-            scrollController: controller,
-            physics: physics,
-            onReorder: (int start, int end) {
-              taskList.reorganizeTask(from: start, to: end);
-            },
-            children: <Widget>[
-              for (var (int index, Task task) in taskList.tasks.indexed)
-                ReorderableDelayedDragStartListener(
-                  key: ValueKey<(int, int)>((taskList.id, index)),
-                  index: index,
-                  child: TaskItem(taskList: taskList, task: task),
-                ),
-            ],
-          ),
+    return ChangeNotifierBuilder(
+      changeNotifier: TaskRepository.of(context),
+      selector: (TaskRepository repository) => repository.activeTaskList,
+      builder: (BuildContext context, TaskRepository repository, Widget? child) {
+        return ChangeNotifierBuilder(
+          changeNotifier: repository.activeTaskList,
+          builder: (BuildContext context, TaskList taskList, Widget? child) {
+            return NotificationListener<RemoveTaskNotification>(
+              onNotification: (RemoveTaskNotification notification) {
+                taskList.removeTask(id: notification.id);
+                return true;
+              },
+              child: MouseScroll(
+                builder: (BuildContext context, ScrollController controller, ScrollPhysics physics) {
+                  return ReorderableListView(
+                    scrollController: controller,
+                    physics: physics,
+                    onReorder: (int start, int end) {
+                      taskList.reorganizeTask(from: start, to: end);
+                    },
+                    children: <Widget>[
+                      for (var (int index, Task task) in taskList.tasks.indexed)
+                        ReorderableDelayedDragStartListener(
+                          key: ValueKey<Task>(task),
+                          index: index,
+                          child: TaskItem(taskRepository: repository, task: task),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );

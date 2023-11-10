@@ -13,15 +13,37 @@ class TaskRepository extends ChangeNotifier {
   final List<TaskList> _taskLists = <TaskList>[];
   ImmutableList<TaskList> get taskLists => ImmutableList<TaskList>(_taskLists);
 
+  ImmutableList<Task> get taskListsDueToday {
+    DateTime now = DateTime.now();
+    DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+
+    return ImmutableList<Task>(<Task>[
+      for (TaskList list in _taskLists) ...<Task>[
+        for (Task task in list.tasks)
+          if (task case Task(:DateTime deadline)
+              when deadline.isBefore(tomorrow) && (deadline == now || deadline.isAfter(now)))
+            task,
+      ],
+    ]);
+  }
+
   TaskList get activeTaskList => _taskLists[_activeTaskListIndex];
 
   int _activeTaskListIndex = 0;
   int get activeTaskListIndex => _activeTaskListIndex;
   set activeTaskListIndex(int value) {
     if (_activeTaskListIndex != value) {
+      _taskLists
+        ..[_activeTaskListIndex].removeListener(_listen)
+        ..[value].addListener(_listen);
+
       _activeTaskListIndex = value;
       notifyListeners();
     }
+  }
+
+  void _listen() {
+    notifyListeners();
   }
 
   void addTaskList(TaskList taskList) {
@@ -64,6 +86,19 @@ class TaskRepository extends ChangeNotifier {
     activeTaskListIndex = _taskLists.indexOf(activeTask);
 
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    for (TaskList taskList in _taskLists) {
+      taskList.removeListener(_listen);
+    }
+
+    super.dispose();
+  }
+
+  static TaskRepository? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InheritedTaskRepository>()?.taskRepository;
   }
 
   static TaskRepository of(BuildContext context) {
