@@ -22,8 +22,8 @@ class _ListInputState extends State<ListInput> {
     return _listBuilder!;
   }
 
-  void submitListBuilder() {
-    var _ListBuilder(:String? name) = taskBuilder;
+  void _submitListBuilder() {
+    String? name = taskBuilder.name;
     if (name == null || name.isEmpty) {
       return;
     }
@@ -44,7 +44,7 @@ class _ListInputState extends State<ListInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: Row(
         children: <Widget>[
@@ -56,7 +56,7 @@ class _ListInputState extends State<ListInput> {
                 padding: EdgeInsets.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              onPressed: submitListBuilder,
+              onPressed: _submitListBuilder,
               child: const Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(Icons.add),
@@ -81,7 +81,7 @@ class _ListInputState extends State<ListInput> {
               },
               onSubmitted: (String title) {
                 taskBuilder.name = title;
-                submitListBuilder();
+                _submitListBuilder();
               },
             ),
           ),

@@ -29,8 +29,7 @@ class _ApplicationState extends State<Application> {
         pages: const <Page<Object>>[
           MaterialPage<Object>(child: Home()),
         ],
-        onPopPage: (Route<Object?> route, Object? b) {
-          return route.didPop(b);
+        onDidRemovePage: (Page<Object?> page) {
         },
       ),
     );

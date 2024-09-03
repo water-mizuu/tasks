@@ -6,6 +6,10 @@ import "package:flutter/material.dart";
 ///   when the value returned by [selector] changes.
 @optionalTypeArgs
 class ChangeNotifierBuilder<T extends ChangeNotifier, S extends Object?> extends StatefulWidget {
+  /// A widget that listens to a [ChangeNotifier] and rebuilds whenever the [ChangeNotifier] notifies its listeners.
+  ///  It is important that widgets that depend on [changeNotifier] are placed inside the [builder] function.
+  /// If [selector] is provided, the [ChangeNotifierBuilder] will only rebuild
+  ///   when the value returned by [selector] changes.
   const ChangeNotifierBuilder({
     required this.builder,
     required this.changeNotifier,
@@ -26,7 +30,7 @@ class ChangeNotifierBuilder<T extends ChangeNotifier, S extends Object?> extends
   final T changeNotifier;
 
   /// An optional selector that allows the [ChangeNotifierBuilder] to listen to a specific property of [changeNotifier],
-  /// rebuilding only when that property changes.
+  /// rebuilding only when that property changes. However, this does not modify the object given to [builder].
   final S Function(T)? selector;
 
   @override
@@ -38,12 +42,12 @@ final class _ChangeNotifierBuilderState<T extends ChangeNotifier, S extends Obje
   S? latest;
 
   void _listener() {
-    if (widget.selector == null) {
+    if (widget.selector case null) {
       setState(() {});
       return;
     }
 
-    if (widget.selector!.call(widget.changeNotifier) case S value when value != latest) {
+    if (widget.selector!(widget.changeNotifier) case S value when value != latest) {
       setState(() {
         latest = value;
       });

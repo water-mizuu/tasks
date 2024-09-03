@@ -83,7 +83,7 @@ class TaskItem extends StatelessWidget {
         widget = ChangeNotifierBuilder(
           changeNotifier: state.position,
           builder: (BuildContext context, ScrollPosition position, Widget? child) {
-            Widget widget = child!;
+            Widget innerWidget = child!;
 
             if (context.findRenderObject() case RenderBox box when parentBox.hasSize && box.hasSize) {
               if (box.maybeLocalToGlobal(Offset.zero)?.dy case double offset) {
@@ -99,17 +99,17 @@ class TaskItem extends StatelessWidget {
                   _ => 1.0,
                 };
 
-                widget = Transform.scale(
+                innerWidget = Transform.scale(
                   scale: 0.8 + 0.2 * factor,
                   child: Opacity(
                     opacity: 0.25 + 0.75 * factor,
-                    child: widget,
+                    child: innerWidget,
                   ),
                 );
               }
             }
 
-            return widget;
+            return innerWidget;
           },
           child: widget,
         );

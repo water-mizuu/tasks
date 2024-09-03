@@ -164,8 +164,8 @@ class _EditableListTitleState extends State<EditableListTitle> {
                 onEditingComplete: completeEdit(context),
                 onTapOutside: (_) => completeEdit(context)(),
                 enabled: textEditingController != null,
-                style: MaterialStateTextStyle.resolveWith((Set<MaterialState> states) {
-                  Color color = states.contains(MaterialState.disabled) //
+                style: WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
+                  Color color = states.contains(WidgetState.disabled) //
                       ? Colors.black
                       : Colors.black87;
 

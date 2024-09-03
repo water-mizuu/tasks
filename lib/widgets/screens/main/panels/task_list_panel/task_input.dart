@@ -12,7 +12,7 @@ class TaskInput extends StatefulWidget {
 
 class _TaskInputState extends State<TaskInput> {
   late final TextEditingController textEditingController;
-  late final TaskList taskList;
+  bool hasListened = false;
 
   _TaskBuilder? _taskBuilder;
   _TaskBuilder get taskBuilder {
@@ -25,24 +25,20 @@ class _TaskInputState extends State<TaskInput> {
     return _taskBuilder!;
   }
 
-  void submitTaskBuilder() {
-    var _TaskBuilder(:String? title, :DateTime? deadline) = taskBuilder;
-    if (title == null || title.isEmpty) {
-      return;
+  void submitTaskBuilder(TaskList taskList) {
+    try {
+      var _TaskBuilder(:String? title, :DateTime? deadline) = taskBuilder;
+      if (title == null || title.isEmpty) {
+        return;
+      }
+
+      taskList.addTask(title: title, deadline: deadline, isCompleted: false);
+      textEditingController.clear();
+    } finally {
+      setState(() {
+        _taskBuilder = null;
+      });
     }
-
-    taskList.addTask(title: title, deadline: deadline, isCompleted: false);
-    textEditingController.clear();
-    setState(() {
-      _taskBuilder = null;
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    taskList = TaskRepository.of(context).activeTaskList;
   }
 
   @override
@@ -54,81 +50,87 @@ class _TaskInputState extends State<TaskInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      child: Row(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                minimumSize: Size.zero,
-                padding: EdgeInsets.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return ChangeNotifierBuilder(
+      changeNotifier: TaskRepository.of(context),
+      selector: (TaskRepository repository) => repository.activeTaskListIndex,
+      builder: (BuildContext context, TaskRepository repository, _) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: Size.zero,
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  onPressed: () => submitTaskBuilder(TaskRepository.of(context).activeTaskList),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(Icons.add),
+                  ),
+                ),
               ),
-              onPressed: submitTaskBuilder,
-              child: const Padding(
-                padding: EdgeInsets.all(8),
-                child: Icon(Icons.add),
+              Expanded(
+                child: TextField(
+                  controller: textEditingController,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Add a task",
+                  ),
+                  onChanged: (String value) {
+                    if (value.isEmpty) {
+                      setState(() {
+                        _taskBuilder = null;
+                      });
+                    } else {
+                      taskBuilder.title = value;
+                    }
+                  },
+                  onSubmitted: (String title) {
+                    taskBuilder.title = title;
+                    submitTaskBuilder(repository.activeTaskList);
+                  },
+                ),
               ),
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: textEditingController,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: "Add a task",
-              ),
-              onChanged: (String value) {
-                if (value.isEmpty) {
-                  setState(() {
-                    _taskBuilder = null;
-                  });
-                } else {
-                  taskBuilder.title = value;
-                }
-              },
-              onSubmitted: (String title) {
-                taskBuilder.title = title;
-                submitTaskBuilder();
-              },
-            ),
-          ),
-          if (_taskBuilder != null)
-            TextButton(
-              onPressed: () async {
-                DateTime? date = await showDatePicker(
-                  context: context,
-                  firstDate: DateTime.fromMillisecondsSinceEpoch(0),
-                  initialDate: taskBuilder.deadline ?? DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-                );
+              if (_taskBuilder != null)
+                TextButton(
+                  onPressed: () async {
+                    DateTime? date = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime.fromMillisecondsSinceEpoch(0),
+                      initialDate: taskBuilder.deadline ?? DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+                    );
 
-                if (date == null) {
-                  return;
-                }
-                taskBuilder.deadline = date;
-              },
-              child: ChangeNotifierBuilder(
-                changeNotifier: taskBuilder,
-                selector: (_TaskBuilder taskBuilder) => taskBuilder.deadline,
-                builder: (BuildContext context, _TaskBuilder taskBuilder, Widget? child) {
-                  return Column(
-                    children: <Widget>[
-                      const Icon(Icons.calendar_month_outlined),
-                      if (_taskBuilder?.deadline case DateTime deadline)
-                        Text(
-                          "${deadline.month}/${deadline.day}/${deadline.year}",
-                          style: const TextStyle(fontSize: 10),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
+                    if (date == null) {
+                      return;
+                    }
+                    taskBuilder.deadline = date;
+                  },
+                  child: ChangeNotifierBuilder(
+                    changeNotifier: taskBuilder,
+                    selector: (_TaskBuilder taskBuilder) => taskBuilder.deadline,
+                    builder: (BuildContext context, _TaskBuilder taskBuilder, Widget? child) {
+                      return Column(
+                        children: <Widget>[
+                          const Icon(Icons.calendar_month_outlined),
+                          if (_taskBuilder?.deadline case DateTime deadline)
+                            Text(
+                              "${deadline.month}/${deadline.day}/${deadline.year}",
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
