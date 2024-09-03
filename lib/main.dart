@@ -22,15 +22,14 @@ class _ApplicationState extends State<Application> {
         dragDevices: PointerDeviceKind.values.toSet(),
       ),
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
       home: Navigator(
         pages: const <Page<Object>>[
           MaterialPage<Object>(child: Home()),
         ],
-        onDidRemovePage: (Page<Object?> page) {
-        },
+        onDidRemovePage: (Page<Object?> page) {},
       ),
     );
   }

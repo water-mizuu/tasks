@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/widgets/screens/main/panels/task_list_panel/side_drawer.dart";
+import "package:tasks/widgets/screens/main/panels/task_list_panel/side_drawer/side_drawer.dart";
 import "package:tasks/widgets/screens/main/panels/task_list_panel/task_input.dart";
 import "package:tasks/widgets/screens/main/panels/task_list_panel/task_list.dart";
 import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
     super.initState();
 
     <TaskList>[
-      TaskList.dummy(id: 0, taskCount: 6, name: "List #0"),
+      TaskList.dummy(id: 0, taskCount: 8, name: "List #0"),
       TaskList.dummy(id: 1, taskCount: 5, name: "List #1"),
       TaskList.dummy(id: 2, taskCount: 3, name: "List #2"),
     ].forEach(taskRepository.addTaskList);

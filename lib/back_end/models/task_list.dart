@@ -10,7 +10,7 @@ class TaskList extends ChangeNotifier {
   TaskList({required this.id, required String name, required List<Task> tasks})
       : _name = name,
         _tasks = tasks,
-        assert(tasks.map((Task v) => v.id).toSet().length == tasks.length, "task ids must be unique") {
+        assert(tasks.map((Task v) => v.id).toSet().length == tasks.length, "Task ids must be unique") {
     taskId = tasks.isEmpty ? 0 : tasks.map((Task task) => task.id).reduce(math.max) + 1;
   }
 

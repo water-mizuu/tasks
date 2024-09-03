@@ -8,7 +8,7 @@ extension MaybeLocalToGlobal on RenderBox {
 
     try {
       return localToGlobal(point, ancestor: ancestor);
-    } on Exception catch (_) {
+    } on Object catch (_) {
       return null;
     }
   }

@@ -5,8 +5,6 @@ import "package:tasks/back_end/models/task.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/shared/extension_types/immutable_list.dart";
 
-typedef Indexed<T> = (int index, T value);
-
 class TaskRepository extends ChangeNotifier {
   int taskListId = 0;
 
@@ -17,14 +15,15 @@ class TaskRepository extends ChangeNotifier {
     DateTime now = DateTime.now();
     DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
 
-    return ImmutableList<Task>(<Task>[
+    return <Task>[
       for (TaskList list in _taskLists) ...<Task>[
         for (Task task in list.tasks)
-          if (task case Task(:DateTime deadline)
+          if (task //
+              case Task(:DateTime deadline)
               when deadline.isBefore(tomorrow) && (deadline == now || deadline.isAfter(now)))
             task,
       ],
-    ]);
+    ].immutable;
   }
 
   TaskList get activeTaskList => _taskLists[_activeTaskListIndex];

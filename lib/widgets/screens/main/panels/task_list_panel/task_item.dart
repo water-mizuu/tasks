@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/shared/extensions/maybe_local_to_global.dart";
-import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
+import "package:tasks/widgets/screens/main/panels/task_list_panel/notifications/remove_task_notification.dart";
 
 class TaskItem extends StatelessWidget {
   const TaskItem({
@@ -18,7 +17,7 @@ class TaskItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var (_) = MediaQuery.maybeSizeOf(context);
 
-    Widget widget = ListenableBuilder(
+    return ListenableBuilder(
       listenable: task,
       builder: (BuildContext context, _) {
         return Dismissible(
@@ -77,51 +76,7 @@ class TaskItem extends StatelessWidget {
         );
       },
     );
-
-    if (Scrollable.maybeOf(context) case ScrollableState state when state.context.mounted) {
-      if (state.context.findRenderObject() case RenderBox parentBox) {
-        widget = ChangeNotifierBuilder(
-          changeNotifier: state.position,
-          builder: (BuildContext context, ScrollPosition position, Widget? child) {
-            Widget innerWidget = child!;
-
-            if (context.findRenderObject() case RenderBox box when parentBox.hasSize && box.hasSize) {
-              if (box.maybeLocalToGlobal(Offset.zero)?.dy case double offset) {
-                double parentHeight = parentBox.size.height;
-                double height = box.size.height;
-
-                double factor = switch (offset) {
-                  /// If object has parts above the screen
-                  // _ when offset < 0 => ((height + offset) / height).clamp(0.0, 1.0),
-
-                  /// If the object has parts below the screen
-                  _ when offset + height > parentHeight => ((parentHeight - offset) / height).clamp(0.0, 1.0),
-                  _ => 1.0,
-                };
-
-                innerWidget = Transform.scale(
-                  scale: 0.8 + 0.2 * factor,
-                  child: Opacity(
-                    opacity: 0.25 + 0.75 * factor,
-                    child: innerWidget,
-                  ),
-                );
-              }
-            }
-
-            return innerWidget;
-          },
-          child: widget,
-        );
-      }
-    }
-
-    return widget;
   }
 }
 
 // taskList.removeTask(id: task.id);
-class RemoveTaskNotification extends Notification {
-  const RemoveTaskNotification(this.id);
-  final int id;
-}

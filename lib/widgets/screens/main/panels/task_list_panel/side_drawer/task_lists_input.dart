@@ -1,14 +1,14 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_repository.dart";
 
-class ListInput extends StatefulWidget {
-  const ListInput({super.key});
+class TaskListsInput extends StatefulWidget {
+  const TaskListsInput({super.key});
 
   @override
-  State<ListInput> createState() => _ListInputState();
+  State<TaskListsInput> createState() => _TaskListsInputState();
 }
 
-class _ListInputState extends State<ListInput> {
+class _TaskListsInputState extends State<TaskListsInput> {
   late final TextEditingController textEditingController;
 
   _ListBuilder? _listBuilder;
