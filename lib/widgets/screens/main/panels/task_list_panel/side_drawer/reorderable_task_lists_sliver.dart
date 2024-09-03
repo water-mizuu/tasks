@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
-import "package:tasks/shared/extension_types/immutable_list.dart";
 import "package:tasks/widgets/screens/main/panels/task_list_panel/side_drawer/notifications/change_task_list_index.dart";
 import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 
@@ -13,16 +12,21 @@ class ReorderableTaskListsSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TaskRepository repository = TaskRepository.of(context);
-    ImmutableList<TaskList> taskLists = repository.taskLists;
     return SliverPadding(
       padding: const EdgeInsets.only(left: 8),
       sliver: ChangeNotifierBuilder(
         changeNotifier: repository,
-        selector: (TaskRepository repository) => taskLists.map((TaskList v) => v.id).join(";"),
+        selector: (TaskRepository repository) => (repository.taskLists.toList()
+              ..sort((TaskList a, TaskList b) => a.listIndex - b.listIndex))
+            .map((TaskList v) => v.id)
+            .join(";"),
         builder: (BuildContext context, TaskRepository repository, Widget? child) {
+          List<TaskList> taskLists = repository.taskLists.toList()
+            ..sort((TaskList a, TaskList b) => a.listIndex - b.listIndex);
+
           return SliverReorderableList(
             onReorder: (int a, int b) {
-              repository.reorganizeTask(from: a, to: b);
+              repository.reorganizeTaskList(from: a, to: b);
             },
             itemCount: taskLists.length,
             itemBuilder: (BuildContext context, int index) {

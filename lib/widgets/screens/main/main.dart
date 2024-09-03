@@ -1,4 +1,7 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:tasks/back_end/database/database_helper.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
 import "package:tasks/widgets/screens/main/panels/task_list_panel/side_drawer/side_drawer.dart";
@@ -16,23 +19,27 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TaskRepository taskRepository = TaskRepository();
+  late Future<List<TaskList>?> taskLists;
 
   @override
   void initState() {
     super.initState();
 
-    <TaskList>[
-      TaskList.dummy(id: 0, taskCount: 8, name: "List #0"),
-      TaskList.dummy(id: 1, taskCount: 5, name: "List #1"),
-      TaskList.dummy(id: 2, taskCount: 3, name: "List #2"),
-    ].forEach(taskRepository.addTaskList);
+    taskLists = DatabaseHelper.taskLists;
+    unawaited(
+      DatabaseHelper.registerRepository(taskRepository).then((_) {
+        if (mounted) {
+          setState(() {});
+        }
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return NotificationListener<_ChangeTitleNotification>(
       onNotification: (_ChangeTitleNotification notification) {
-        taskRepository.activeTaskList.name = notification.title;
+        taskRepository.activeTaskList?.name = notification.title;
         return true;
       },
       child: InheritedTaskRepository(
@@ -57,7 +64,7 @@ class DesktopTaskList extends StatelessWidget {
     super.key,
   });
 
-  final TaskList taskList;
+  final TaskList? taskList;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +91,7 @@ class DesktopTaskList extends StatelessWidget {
 class MobileTaskList extends StatelessWidget {
   const MobileTaskList({required this.taskList, super.key});
 
-  final TaskList taskList;
+  final TaskList? taskList;
 
   @override
   Widget build(BuildContext context) {
@@ -145,40 +152,43 @@ class _EditableListTitleState extends State<EditableListTitle> {
     return ListenableBuilder(
       listenable: taskRepository,
       builder: (BuildContext context, _) {
-        return ChangeNotifierBuilder(
-          changeNotifier: taskRepository.activeTaskList,
-          selector: (TaskList taskList) => taskList.name,
-          builder: (BuildContext context, TaskList taskList, Widget? child) {
-            return GestureDetector(
-              onDoubleTap: () {
-                setState(() {
-                  textEditingController = TextEditingController(text: taskList.name);
-                  focus();
-                });
-              },
-              child: TextField(
-                controller: textEditingController ?? TextEditingController(text: taskList.name),
-                focusNode: focusNode,
-                autofocus: true,
-                showCursor: true,
-                onEditingComplete: completeEdit(context),
-                onTapOutside: (_) => completeEdit(context)(),
-                enabled: textEditingController != null,
-                style: WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
-                  Color color = states.contains(WidgetState.disabled) //
-                      ? Colors.black
-                      : Colors.black87;
+        return switch (taskRepository.activeTaskList) {
+          TaskList activeTaskList => ChangeNotifierBuilder(
+              changeNotifier: activeTaskList,
+              selector: (TaskList taskList) => taskList.name,
+              builder: (BuildContext context, TaskList taskList, Widget? child) {
+                return GestureDetector(
+                  onDoubleTap: () {
+                    setState(() {
+                      textEditingController = TextEditingController(text: taskList.name);
+                      focus();
+                    });
+                  },
+                  child: TextField(
+                    controller: textEditingController ?? TextEditingController(text: taskList.name),
+                    focusNode: focusNode,
+                    autofocus: true,
+                    showCursor: true,
+                    onEditingComplete: completeEdit(context),
+                    onTapOutside: (_) => completeEdit(context)(),
+                    enabled: textEditingController != null,
+                    style: WidgetStateTextStyle.resolveWith((Set<WidgetState> states) {
+                      Color color = states.contains(WidgetState.disabled) //
+                          ? Colors.black
+                          : Colors.black87;
 
-                  return TextStyle(color: color, fontSize: 24.0);
-                }),
-                decoration: const InputDecoration(
-                  disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            );
-          },
-        );
+                      return TextStyle(color: color, fontSize: 24.0);
+                    }),
+                    decoration: const InputDecoration(
+                      disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                );
+              },
+            ),
+          null => Container(),
+        };
       },
     );
   }

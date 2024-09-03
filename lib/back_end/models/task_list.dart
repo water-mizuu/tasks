@@ -1,90 +1,43 @@
-import "dart:math" as math;
-
 import "package:flutter/material.dart";
-import "package:tasks/back_end/models/task.dart";
-import "package:tasks/shared/extension_types/immutable_list.dart";
+import "package:tasks/back_end/database/database_helper.dart";
 
 typedef Indexed<T> = (int index, T value);
 
 class TaskList extends ChangeNotifier {
-  TaskList({required this.id, required String name, required List<Task> tasks})
+  TaskList({required this.id, required String name, required int listIndex})
       : _name = name,
-        _tasks = tasks,
-        assert(tasks.map((Task v) => v.id).toSet().length == tasks.length, "Task ids must be unique") {
-    taskId = tasks.isEmpty ? 0 : tasks.map((Task task) => task.id).reduce(math.max) + 1;
-  }
-
-  TaskList.empty({required int id, required String name}) : this(id: id, name: name, tasks: <Task>[]);
-  TaskList.dummy({int? id, int taskCount = 10, String name = "Dummy"})
-      : this(
-          id: id ?? 0,
-          name: name,
-          tasks: <Task>[
-            for (int i = 0; i < taskCount; ++i)
-              Task(
-                id: i,
-                title: "Task #$i",
-                isCompleted: false,
-                deadline: switch (math.Random().nextDouble()) {
-                  > 0.5 => DateTime.now().add(Duration(days: math.Random().nextInt(10))),
-                  _ => null,
-                },
-              ),
-          ],
-        );
+        _listIndex = listIndex;
 
   /// The id of this list.
   final int id;
 
-  /// The id to use for the next item
-  late int taskId;
-
   String _name;
+
+  /// The name of this list.
   String get name => _name;
   set name(String value) {
     if (_name != value) {
       _name = value;
+
+      DatabaseHelper.renameTaskList(id: id, name: value);
+
       notifyListeners();
     }
   }
 
-  final List<Task> _tasks;
-  ImmutableList<Task> get tasks => ImmutableList<Task>(_tasks);
+  int _listIndex;
+  int get listIndex => _listIndex;
+  set listIndex(int value) {
+    if (_listIndex != value) {
+      _listIndex = value;
 
-  void addTask({required String title, required bool isCompleted, required DateTime? deadline}) {
-    _tasks.add(
-      Task(
-        title: title,
-        id: taskId,
-        isCompleted: isCompleted,
-        deadline: deadline,
-      ),
-    );
-    taskId += 1;
+      DatabaseHelper.setTaskListListIndex(id: id, listIndex: value);
 
-    notifyListeners();
+      notifyListeners();
+    }
   }
 
-  void removeTask({required int id}) {
-    _tasks.removeWhere((Task task) => task.id == id);
-
-    notifyListeners();
-  }
-
-  void reorganizeTask({required int from, required int to}) {
-    if (from == to) {
-      return;
-    }
-
-    /// If we're moving an item down, we need to adjust the index
-    /// to account for the fact that the item will be removed
-    if (to > from) {
-      --to;
-    }
-
-    Task task = tasks[from];
-    _tasks.removeAt(from);
-    _tasks.insert(to, task);
-    notifyListeners();
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{"id": id, "name": name, "list_index": listIndex};
   }
 }

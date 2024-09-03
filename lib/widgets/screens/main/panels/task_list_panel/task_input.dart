@@ -32,7 +32,7 @@ class _TaskInputState extends State<TaskInput> {
         return;
       }
 
-      taskList.addTask(title: title, deadline: deadline, isCompleted: false);
+      TaskRepository.of(context).addTask(title: title, deadline: deadline, isCompleted: false);
       textEditingController.clear();
     } finally {
       setState(() {
@@ -66,7 +66,11 @@ class _TaskInputState extends State<TaskInput> {
                     padding: EdgeInsets.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  onPressed: () => submitTaskBuilder(TaskRepository.of(context).activeTaskList),
+                  onPressed: () {
+                    if (TaskRepository.of(context).activeTaskList case TaskList taskList) {
+                      submitTaskBuilder(taskList);
+                    }
+                  },
                   child: const Padding(
                     padding: EdgeInsets.all(8),
                     child: Icon(Icons.add),
@@ -91,7 +95,10 @@ class _TaskInputState extends State<TaskInput> {
                   },
                   onSubmitted: (String title) {
                     taskBuilder.title = title;
-                    submitTaskBuilder(repository.activeTaskList);
+
+                    if (repository.activeTaskList case TaskList taskList) {
+                      submitTaskBuilder(taskList);
+                    }
                   },
                 ),
               ),

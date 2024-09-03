@@ -15,7 +15,7 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var (_) = MediaQuery.maybeSizeOf(context);
+    (_) = MediaQuery.maybeSizeOf(context);
 
     return ListenableBuilder(
       listenable: task,
@@ -61,7 +61,7 @@ class TaskItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          task.title,
+                          task.name,
                           style: const TextStyle(fontSize: 16.0),
                         ),
                         if (task.deadline case DateTime deadline)
