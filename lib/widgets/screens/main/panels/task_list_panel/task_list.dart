@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:mouse_scroll/mouse_scroll.dart";
+import "package:scroll_animator/scroll_animator.dart";
 import "package:tasks/back_end/models/task.dart";
 import "package:tasks/back_end/models/task_list.dart";
 import "package:tasks/back_end/models/task_repository.dart";
@@ -29,14 +29,14 @@ class TaskListView extends StatelessWidget {
                     .map((Task task) => task.id)
                     .join(";"),
                 builder: (BuildContext context, Object? list, Widget? child) {
-                  return MouseScroll(
-                    builder: (BuildContext context, ScrollController controller, ScrollPhysics physics) {
+                  return Builder(
+                    builder: (BuildContext context) {
                       List<Task> tasks = repository.tasksOf(listId: activeTaskList.id).toList()
                         ..sort((Task a, Task b) => a.listIndex - b.listIndex);
 
                       return ReorderableListView(
-                        scrollController: controller,
-                        physics: physics,
+                        scrollController:
+                            AnimatedScrollController(animationFactory: const ChromiumEaseInOut()),
                         onReorder: (int start, int end) {
                           repository.reorganizeTask(activeTaskList, from: start, to: end);
                         },

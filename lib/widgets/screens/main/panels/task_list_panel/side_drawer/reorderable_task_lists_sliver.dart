@@ -9,6 +9,13 @@ class ReorderableTaskListsSliver extends StatelessWidget {
     super.key,
   });
 
+  String _selector(TaskRepository repository) {
+    List<TaskList> taskLists = repository.taskLists.toList()
+      ..sort((TaskList a, TaskList b) => a.listIndex - b.listIndex);
+
+    return taskLists.map((TaskList v) => v.id).join(";");
+  }
+
   @override
   Widget build(BuildContext context) {
     TaskRepository repository = TaskRepository.of(context);
@@ -16,10 +23,7 @@ class ReorderableTaskListsSliver extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8),
       sliver: ChangeNotifierBuilder(
         changeNotifier: repository,
-        selector: (TaskRepository repository) => (repository.taskLists.toList()
-              ..sort((TaskList a, TaskList b) => a.listIndex - b.listIndex))
-            .map((TaskList v) => v.id)
-            .join(";"),
+        selector: _selector,
         builder: (BuildContext context, TaskRepository repository, Widget? child) {
           List<TaskList> taskLists = repository.taskLists.toList()
             ..sort((TaskList a, TaskList b) => a.listIndex - b.listIndex);

@@ -7,13 +7,16 @@ import "package:tasks/widgets/shared/helper/change_notifier_builder.dart";
 class PredefinedTaskListsSliver extends StatelessWidget {
   const PredefinedTaskListsSliver({super.key});
 
+  String _selector(TaskRepository repository) =>
+      repository.taskLists.map((TaskList v) => v.id).join(";");
+
   @override
   Widget build(BuildContext context) {
     TaskRepository repository = TaskRepository.of(context);
 
     return ChangeNotifierBuilder(
       changeNotifier: repository,
-      selector: (TaskRepository repository) => repository.taskLists.map((TaskList v) => v.id).join(";"),
+      selector: _selector,
       builder: (BuildContext context, TaskRepository repository, Widget? child) {
         return SliverPadding(
           padding: const EdgeInsets.only(left: 8),

@@ -34,11 +34,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_slidable: ^3.1.1
-  mouse_scroll:
-    git: https://github.com/water-mizuu/mouse_scroll.git
   overlay_support: ^2.1.0
   path: ^1.9.0
   path_provider: ^2.1.4
+  scroll_animator: ^0.3.0
   sqflite: ^2.3.3+1
   sqflite_common_ffi: ^2.3.3
 
